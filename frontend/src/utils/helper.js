@@ -5,3 +5,9 @@ export const parseJwt = (token) => {
     return null;
   }
 };
+
+export const sliceString = (value, number = 50) => {
+  if (!value) return null;
+  if (value < number) return value;
+  return value.substring(0, number) + '...';
+};
