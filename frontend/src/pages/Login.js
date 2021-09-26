@@ -12,8 +12,9 @@ import * as types from '../store/types';
 
 import { useHistory } from 'react-router-dom';
 import { userLogin } from '../store/acton/userAction';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { parseJwt } from '../utils/helper';
+import {} from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -21,6 +22,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const history = useHistory();
+  const isLogin = useSelector((state) => state.user.isLogin);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -36,10 +38,15 @@ const Login = () => {
             user,
           },
         });
+        history.push('/inbox');
       }
     });
-    // history.push('/inbox');
   };
+
+  if (isLogin) {
+    history.push('/inbox');
+  }
+
   return (
     <div>
       <div>

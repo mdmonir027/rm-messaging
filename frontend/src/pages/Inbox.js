@@ -2,7 +2,15 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Box from '../components/Box';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 const Inbox = () => {
+  const isLogin = useSelector((state) => state.user.isLogin);
+  const history = useHistory();
+
+  if (!isLogin) {
+    history.push('/');
+  }
   return (
     <Grid
       container
