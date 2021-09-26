@@ -1,0 +1,15 @@
+
+models 
+    -Users
+        -name 
+        -username
+        -email
+        -password
+        -connected
+    -Messages
+        -text
+        -createdBy
+    -conversations
+        -senderId
+        -receiverId
+        -messageId
