@@ -8,17 +8,37 @@ import {
   Link,
 } from '@mui/material';
 
+import * as types from '../store/types';
+
 import { useHistory } from 'react-router-dom';
+import { userLogin } from '../store/acton/userAction';
+import { useDispatch } from 'react-redux';
+import { parseJwt } from '../utils/helper';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log({ username, password });
-    history.push('/inbox');
+    userLogin({ username, password }, (result) => {
+      if (result.error) {
+        setErrors(result.errors);
+      } else {
+        setErrors({});
+        const user = parseJwt(result.token);
+        dispatch({
+          type: types.SET_USER,
+          payload: {
+            user,
+          },
+        });
+      }
+    });
+    // history.push('/inbox');
   };
   return (
     <div>
@@ -65,6 +85,8 @@ const Login = () => {
                       onChange={(event) => setUsername(event.target.value)}
                       required
                       autoFocus
+                      error={!!errors?.username}
+                      helperText={errors?.username && errors.username}
                     />
                   </Grid>
                   <Grid item>
@@ -72,11 +94,12 @@ const Login = () => {
                       type='password'
                       placeholder='Password'
                       fullWidth
-                      name='password'
                       variant='outlined'
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                       required
+                      error={!!errors?.password}
+                      helperText={errors?.password && errors.password}
                     />
                   </Grid>
                   <Grid item>
