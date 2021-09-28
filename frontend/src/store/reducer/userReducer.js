@@ -1,19 +1,22 @@
-import { SET_USER } from '../types.js';
+import { SET_CONNECTED_USER, SET_DISCONNECTED_USER } from '../types.js';
 
 const init = {
-  isLogin: false,
-  user: {},
+  connected: [],
+  disconnected: [],
 };
 
 const userReducer = (state = init, action) => {
   switch (action.type) {
-    case SET_USER:
-      const { user } = action.payload;
+    case SET_CONNECTED_USER: {
+      const { users } = action.payload;
 
-      return {
-        isLogin: Object.keys(user).length !== 0,
-        user,
-      };
+      return { ...state, connected: users };
+    }
+    case SET_DISCONNECTED_USER: {
+      const { users } = action.payload;
+
+      return { ...state, disconnected: users };
+    }
 
     default:
       return state;

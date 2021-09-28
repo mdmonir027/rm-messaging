@@ -7,40 +7,20 @@ import {
   Typography,
   Link,
 } from '@mui/material';
-
-import * as types from '../store/types';
-
 import { useHistory } from 'react-router-dom';
 import { userLogin } from '../store/acton/userAction';
-import { useDispatch, useSelector } from 'react-redux';
-import { parseJwt } from '../utils/helper';
-import {} from 'react-router-dom';
 
-const Login = () => {
+import {} from 'react-router-dom';
+import { connect } from 'react-redux';
+
+const Login = ({ isLogin, errors, userLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({});
-  const dispatch = useDispatch();
   const history = useHistory();
-  const isLogin = useSelector((state) => state.user.isLogin);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    userLogin({ username, password }, (result) => {
-      if (result.error) {
-        setErrors(result.errors);
-      } else {
-        setErrors({});
-        const user = parseJwt(result.token);
-        dispatch({
-          type: types.SET_USER,
-          payload: {
-            user,
-          },
-        });
-        history.push('/inbox');
-      }
-    });
+    userLogin({ username, password }, history);
   };
 
   if (isLogin) {
@@ -138,4 +118,9 @@ const Login = () => {
   );
 };
 
-export default Login;
+const mapStateToProps = (state) => ({
+  isLogin: state.auth.isLogin,
+  errors: state.auth.error === 'login' ? state.auth.errors : {},
+});
+
+export default connect(mapStateToProps, { userLogin })(Login);

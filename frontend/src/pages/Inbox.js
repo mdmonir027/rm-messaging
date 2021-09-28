@@ -5,7 +5,7 @@ import Box from '../components/Box';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 const Inbox = () => {
-  const isLogin = useSelector((state) => state.user.isLogin);
+  const isLogin = useSelector((state) => state.auth.isLogin);
   const history = useHistory();
 
   if (!isLogin) {

@@ -37,7 +37,7 @@ const validator = {
       .isEmpty()
       .withMessage('Confirm password!')
       .custom((confirmPassword, { req }) => {
-        if (confirmPassword !== req.password) {
+        if (confirmPassword !== req.body.password) {
           throw new Error("Password didn't matched!");
         }
         return true;

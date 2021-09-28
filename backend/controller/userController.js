@@ -4,10 +4,22 @@ const { internalServerError } = require('../utils/errorResponse');
 const jwt = require('jsonwebtoken');
 
 const controller = {
-  index: (req, res) => {
-    res.status(200).json({
-      message: 'User found',
-    });
+  index: async (req, res) => {
+    const { type } = req.query;
+    try {
+      if (type === 'd') {
+        const users = await User.find({
+          _id: { $nin: req.user.connected },
+        });
+        return res.status(200).json(users);
+      }
+      const users = await User.find({
+        _id: { $in: req.user.connected },
+      });
+      return res.status(200).json(users);
+    } catch (error) {
+      internalServerError(res, error);
+    }
   },
   register: async (req, res, next) => {
     try {
@@ -25,10 +37,7 @@ const controller = {
 
       return res.status(200).json(user);
     } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        error: 'Internal Server Error',
-      });
+      internalServerError(req, error);
     }
   },
   login: async (req, res, next) => {
@@ -59,10 +68,7 @@ const controller = {
         token: `Bearer ${token}`,
       });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        error: 'Internal Server Error',
-      });
+      internalServerError(req, error);
     }
   },
 };
