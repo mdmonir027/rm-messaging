@@ -37,6 +37,12 @@ export const addConversation =
           conversation,
         },
       });
+      dispatch({
+        type: types.SET_SELECTED_USER,
+        payload: {
+          userId: conversation._id,
+        },
+      });
     } catch (error) {
       console.log(error);
       dispatch({
@@ -45,3 +51,12 @@ export const addConversation =
       });
     }
   };
+
+export const setSelectConversation = (userId) => (dispatch) => {
+  dispatch({
+    type: types.SET_SELECTED_USER,
+    payload: {
+      userId,
+    },
+  });
+};

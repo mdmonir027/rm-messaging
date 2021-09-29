@@ -21,10 +21,18 @@ import AddIcon from '@mui/icons-material/Add';
 import './Sidebar.css';
 import SearchBox from './SearchBox';
 import { sliceString } from '../../utils/helper';
-import { fetchAllConversations } from '../../store/acton/conversationAction';
+import {
+  fetchAllConversations,
+  setSelectConversation,
+} from '../../store/acton/conversationAction';
 import { connect } from 'react-redux';
 
-const Sidebar = ({ conversations, fetchAllConversations }) => {
+const Sidebar = ({
+  conversations,
+  fetchAllConversations,
+  selected,
+  setSelectConversation,
+}) => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => fetchAllConversations(), [fetchAllConversations]);
@@ -49,12 +57,17 @@ const Sidebar = ({ conversations, fetchAllConversations }) => {
           {conversations?.map((conversation) => (
             <React.Fragment key={conversation._id}>
               <ListItem
-                button
+                onClick={() => setSelectConversation(conversation._id)}
                 sx={{
                   alignItems: 'start',
                   mb: '5px',
                   mt: '5px',
                   fontWeight: 'bold',
+                  background:
+                    conversation._id === selected
+                      ? 'rgb(218 218 218)'
+                      : 'transparent',
+                  cursor: 'pointer',
                 }}
               >
                 <ListItemAvatar>
@@ -103,6 +116,10 @@ const Sidebar = ({ conversations, fetchAllConversations }) => {
 
 const mapStateToProps = (state) => ({
   conversations: state.conversation.all,
+  selected: state.conversation.selected,
 });
 
-export default connect(mapStateToProps, { fetchAllConversations })(Sidebar);
+export default connect(mapStateToProps, {
+  fetchAllConversations,
+  setSelectConversation,
+})(Sidebar);

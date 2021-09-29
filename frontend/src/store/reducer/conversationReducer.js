@@ -15,6 +15,13 @@ const conversationReducer = (state = init, action) => {
         loading,
       };
     }
+    case types.SET_SELECTED_USER: {
+      const { userId } = action.payload;
+      return {
+        ...state,
+        selected: userId,
+      };
+    }
     case types.FETCH_CONVERSATIONS: {
       const { conversations } = action.payload;
 
