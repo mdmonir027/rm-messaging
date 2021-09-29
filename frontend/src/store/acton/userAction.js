@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './axios';
 import { parseJwt } from '../../utils/helper';
 
 import * as types from '../types';
@@ -29,12 +29,37 @@ export const userLogin = (data, history) => async (dispatch) => {
   }
 };
 
+export const fetchConnectedUser = () => async (dispatch) => {
+  try {
+    const response = await axios.get(`${baseUrl}/user`);
+    const users = response.data;
+    dispatch({ type: types.SET_CONNECTED_USER, payload: { users } });
+  } catch (error) {
+    console.log(error.response);
+  }
+};
 export const fetchDisconnectedUser = () => async (dispatch) => {
   try {
-    const users = await axios.get(`${baseUrl}/user?type=d`);
+    const response = await axios.get(`${baseUrl}/user?type=d`);
+    const users = response.data;
     dispatch({ type: types.SET_DISCONNECTED_USER, payload: { users } });
     console.log({ users });
   } catch (error) {
     console.log(error.response);
+  }
+};
+
+export const connectNewUser = (userId) => async (dispatch) => {
+  try {
+    const response = await axios.post(`/user/connect/${userId}`);
+    const user = response.data;
+    dispatch({
+      type: types.CONNECT_NEW_USER,
+      payload: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error?.response?.data);
   }
 };

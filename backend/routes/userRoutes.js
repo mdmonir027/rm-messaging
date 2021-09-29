@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const { index, register, login } = require('../controller/userController');
+const {
+  index,
+  register,
+  login,
+  connectNewUser,
+} = require('../controller/userController');
 const {
   registerValidator,
   loginValidator,
@@ -10,5 +15,6 @@ const authenticate = require('../middleware/passport/authenticate');
 router.get('/', authenticate, index);
 router.post('/register', registerValidator, validationResultResponse, register);
 router.post('/login', loginValidator, validationResultResponse, login);
+router.post('/connect/:userId', authenticate, connectNewUser);
 
 module.exports = router;

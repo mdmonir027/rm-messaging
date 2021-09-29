@@ -2,7 +2,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { Typography, Autocomplete, TextField } from '@mui/material';
 import { connect } from 'react-redux';
-import { fetchDisconnectedUser } from '../../store/acton/userAction';
+import {
+  fetchDisconnectedUser,
+  connectNewUser,
+} from '../../store/acton/userAction';
 
 const style = {
   position: 'absolute',
@@ -15,10 +18,17 @@ const style = {
   p: 4,
 };
 
-const SearchBox = ({ options, loading }) => {
+const SearchBox = ({
+  options,
+  fetchDisconnectedUser,
+  connectNewUser,
+  setOpen: modalSetFunction,
+}) => {
   React.useEffect(() => {
     fetchDisconnectedUser();
-  }, []);
+  }, [fetchDisconnectedUser]);
+
+  const [open, setOpen] = React.useState(false);
 
   return (
     <div>
@@ -27,11 +37,33 @@ const SearchBox = ({ options, loading }) => {
           Search User
         </Typography>
         <Autocomplete
-          disablePortal
-          id='combo-box-demo'
+          id='asynchronous-demo'
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          fullWidth
+          onClose={() => {
+            setOpen(false);
+          }}
+          isOptionEqualToValue={(option, value) => {
+            connectNewUser(value._id);
+            modalSetFunction(false);
+            return option.name === value.name;
+          }}
+          getOptionLabel={(option) => option?.name}
           options={options}
-          sx={{ width: 300 }}
-          renderInput={(params) => <TextField {...params} label='Movie' />}
+          renderInput={(params) => (
+            <TextField
+              fullWidth
+              {...params}
+              variant='standard'
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: params.InputProps.endAdornment,
+              }}
+            />
+          )}
         />
       </Box>
     </div>
@@ -39,7 +71,10 @@ const SearchBox = ({ options, loading }) => {
 };
 
 const mapStateToProps = (state) => ({
-  options: state.user.disconnected,
+  options: state.user.disconnected || [],
 });
 
-export default connect(mapStateToProps, { fetchDisconnectedUser })(SearchBox);
+export default connect(mapStateToProps, {
+  fetchDisconnectedUser,
+  connectNewUser,
+})(SearchBox);

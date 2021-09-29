@@ -21,23 +21,13 @@ import AddIcon from '@mui/icons-material/Add';
 import './Sidebar.css';
 import SearchBox from './SearchBox';
 import { sliceString } from '../../utils/helper';
+import { fetchConnectedUser } from '../../store/acton/userAction';
+import { connect } from 'react-redux';
 
-const messages = [
-  {
-    id: 1,
-    username: 'Brunch this week?',
-    lastMessage: "I'll be in the neighbourhood ",
-  },
-  {
-    id: 2,
-    username: 'Summer BBQ',
-    lastMessage: `Who wants to have a cookout this weekend? I just got some furniture
-      for my backyard and would love to fire up the grill.`,
-  },
-];
-
-const Sidebar = () => {
+const Sidebar = ({ fetchConnectedUser, connected }) => {
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => fetchConnectedUser(), [fetchConnectedUser]);
 
   const handleClose = () => setOpen(false);
   return (
@@ -56,8 +46,8 @@ const Sidebar = () => {
           sx={{ mb: 2, height: '70vh', overflowY: 'scroll' }}
           className='scrollBar'
         >
-          {messages.map(({ id, username, lastMessage }) => (
-            <React.Fragment key={id}>
+          {connected?.map((user) => (
+            <React.Fragment key={user._id}>
               <ListItem
                 button
                 sx={{
@@ -68,11 +58,11 @@ const Sidebar = () => {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar alt={username} src={username} />
+                  <Avatar alt={user.username} src={user.username} />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={username}
-                  secondary={sliceString(lastMessage, 35)}
+                  primary={user.name}
+                  secondary={sliceString('hello world', 35)}
                   sx={{ margin: 0 }}
                 />
               </ListItem>
@@ -102,9 +92,14 @@ const Sidebar = () => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <SearchBox />
+        <SearchBox setOpen={setOpen} />
       </Modal>
     </React.Fragment>
   );
 };
-export default Sidebar;
+
+const mapStateToProps = (state) => ({
+  connected: state.user.connected,
+});
+
+export default connect(mapStateToProps, { fetchConnectedUser })(Sidebar);

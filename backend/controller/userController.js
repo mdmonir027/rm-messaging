@@ -9,13 +9,28 @@ const controller = {
     try {
       if (type === 'd') {
         const users = await User.find({
-          _id: { $nin: req.user.connected },
-        });
+          $and: [
+            {
+              _id: { $nin: req.user.connected },
+            },
+            {
+              _id: { $ne: req.user._id },
+            },
+          ],
+        }).select('name email username');
         return res.status(200).json(users);
       }
       const users = await User.find({
-        _id: { $in: req.user.connected },
-      });
+        $and: [
+          {
+            _id: { $in: req.user.connected },
+          },
+          {
+            _id: { $ne: req.user._id },
+          },
+        ],
+      }).select('name email username');
+
       return res.status(200).json(users);
     } catch (error) {
       internalServerError(res, error);
@@ -23,11 +38,12 @@ const controller = {
   },
   register: async (req, res, next) => {
     try {
-      const { email, username, password } = req.body;
+      const { email, username, password, name } = req.body;
 
       const hashPassword = await bcrypt.hash(password, 11);
       const userInstance = new User({
         email,
+        name,
         username,
         password: hashPassword,
         connected: [],
@@ -67,6 +83,45 @@ const controller = {
         message: 'Login was successful',
         token: `Bearer ${token}`,
       });
+    } catch (error) {
+      internalServerError(req, error);
+    }
+  },
+  connectNewUser: async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+
+      const responseUser = await User.findById(userId).select(
+        'name email username'
+      );
+
+      if (!responseUser) {
+        return res.status(400).json({
+          error: 'true',
+          message: 'User not found!',
+        });
+      }
+
+      if (req.user.connected.includes(userId)) {
+        return res.status(403).json({
+          error: 'true',
+          message: 'User already connected!',
+        });
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          $push: {
+            connected: userId,
+          },
+        },
+        { new: true }
+      );
+
+      req.user = updatedUser;
+
+      return res.status(200).json(responseUser);
     } catch (error) {
       internalServerError(req, error);
     }
