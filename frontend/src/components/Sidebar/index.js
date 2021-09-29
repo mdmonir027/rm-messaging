@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 const Sidebar = ({
   conversations,
   fetchAllConversations,
+  userId,
   selected,
   setSelectConversation,
 }) => {
@@ -56,9 +57,9 @@ const Sidebar = ({
         >
           {conversations?.map((conversation) => {
             const name =
-              conversation._id === selected
-                ? conversation?.sender?.name
-                : conversation.receiver.name;
+              conversation.sender._id === userId
+                ? conversation?.receiver?.name
+                : conversation.sender.name;
 
             return (
               <React.Fragment key={conversation._id}>
@@ -120,6 +121,7 @@ const Sidebar = ({
 
 const mapStateToProps = (state) => ({
   conversations: state.conversation.all,
+  userId: state.auth.user._id,
   selected: state.conversation.selected,
 });
 
