@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Grid } from '@mui/material';
 import { connect } from 'react-redux';
+import moment from 'moment';
 const MessageItem = ({ userId, sender, text, date }) => {
   const [condition, setCondition] = useState(false);
 
@@ -14,6 +15,7 @@ const MessageItem = ({ userId, sender, text, date }) => {
         display: 'flex',
         justifyContent: condition ? 'flex-end' : 'flex-start',
         mb: '15px',
+        cursor: 'pointer',
       }}
       container
       spacing={2}
@@ -28,7 +30,7 @@ const MessageItem = ({ userId, sender, text, date }) => {
             bgcolor: condition ? '#dadada' : '#1976d2b8',
             p: '5px 10px',
             borderRadius: '5px',
-            minHeight: '50px',
+            minHeight: '30px',
           }}
         >
           {text}
@@ -41,7 +43,7 @@ const MessageItem = ({ userId, sender, text, date }) => {
             textAlign: condition ? 'right' : 'left',
           }}
         >
-          {date}
+          {moment(date).fromNow()}
         </Typography>
       </Grid>
     </Grid>
