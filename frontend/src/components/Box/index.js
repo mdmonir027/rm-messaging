@@ -4,13 +4,11 @@ import SendMessage from './SendMessage';
 
 import { connect } from 'react-redux';
 import { fetchAllMessage } from '../../store/acton/messageAction';
+import MessageItem from './MessageItem';
 
 const InboxBox = ({ fetchAllMessage, selected, messages }) => {
   useEffect(() => fetchAllMessage(selected), [selected, fetchAllMessage]);
-  const checkIfSender = (sender) => {
-    if (sender !== selected) return true;
-    return false;
-  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -46,49 +44,14 @@ const InboxBox = ({ fetchAllMessage, selected, messages }) => {
           container
         >
           <Grid item xs={12}>
-            {messages.map((message, index) => {
-              const condition = checkIfSender(message.sender);
-
-              return (
-                <Grid
-                  key={message._id}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: condition ? 'flex-end' : 'flex-start',
-                    mb: '15px',
-                  }}
-                  container
-                  spacing={2}
-                >
-                  <Grid item xs={11} sm={8} md={6}>
-                    <Typography
-                      variant='p'
-                      component='p'
-                      gutterBottom
-                      sx={{
-                        textAlign: condition ? 'right' : 'left',
-                        bgcolor: condition ? '#dadada' : '#1976d2b8',
-                        p: '5px 10px',
-                        borderRadius: '5px',
-                        minHeight: '50px',
-                      }}
-                    >
-                      {message?.text}
-                    </Typography>
-                    <Typography
-                      variant='p'
-                      component='p'
-                      gutterBottom
-                      sx={{
-                        textAlign: 'right',
-                      }}
-                    >
-                      {message?.createdAt}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              );
-            })}
+            {messages.map((message) => (
+              <MessageItem
+                sender={message.sender}
+                text={message.text}
+                date={message.createdAt}
+                key={message._id}
+              />
+            ))}
           </Grid>
         </Grid>
       </Paper>

@@ -54,37 +54,41 @@ const Sidebar = ({
           sx={{ mb: 2, height: '70vh', overflowY: 'scroll' }}
           className='scrollBar'
         >
-          {conversations?.map((conversation) => (
-            <React.Fragment key={conversation._id}>
-              <ListItem
-                onClick={() => setSelectConversation(conversation._id)}
-                sx={{
-                  alignItems: 'start',
-                  mb: '5px',
-                  mt: '5px',
-                  fontWeight: 'bold',
-                  background:
-                    conversation._id === selected
-                      ? 'rgb(218 218 218)'
-                      : 'transparent',
-                  cursor: 'pointer',
-                }}
-              >
-                <ListItemAvatar>
-                  <Avatar
-                    alt={conversation?.receiver?.name || ''}
-                    src={conversation?.receiver?.name || ''}
+          {conversations?.map((conversation) => {
+            const name =
+              conversation._id === selected
+                ? conversation?.sender?.name
+                : conversation.receiver.name;
+
+            return (
+              <React.Fragment key={conversation._id}>
+                <ListItem
+                  onClick={() => setSelectConversation(conversation._id)}
+                  sx={{
+                    alignItems: 'start',
+                    mb: '5px',
+                    mt: '5px',
+                    fontWeight: 'bold',
+                    background:
+                      conversation._id === selected
+                        ? 'rgb(218 218 218)'
+                        : 'transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar alt={name} src={name} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={name}
+                    secondary={sliceString('hello world', 35)}
+                    sx={{ margin: 0 }}
                   />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={conversation?.receiver?.name}
-                  secondary={sliceString('hello world', 35)}
-                  sx={{ margin: 0 }}
-                />
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            );
+          })}
         </List>
       </Paper>
       <AppBar

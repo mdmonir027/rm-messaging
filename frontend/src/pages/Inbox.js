@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Box from '../components/Box';
-import { useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-const Inbox = () => {
-  const isLogin = useSelector((state) => state.auth.isLogin);
+import { fetchAllConversations } from '../store/acton/conversationAction';
+
+const Inbox = ({ fetchAllConversations, isLogin }) => {
   const history = useHistory();
+
+  useEffect(() => {
+    if (isLogin) {
+      fetchAllConversations();
+    }
+  }, [fetchAllConversations , isLogin]);
 
   if (!isLogin) {
     history.push('/');
@@ -35,4 +42,8 @@ const Inbox = () => {
   );
 };
 
-export default Inbox;
+const mapStateToProps = (state) => ({
+  isLogin: state.auth.isLogin,
+});
+
+export default connect(mapStateToProps, { fetchAllConversations })(Inbox);

@@ -9,6 +9,8 @@ export const fetchAllConversations = () => async (dispatch) => {
     const response = await axios.get(`${baseUrl}/conversation/all`);
     const conversations = response.data;
 
+    console.log({ conversations });
+
     dispatch({
       type: types.FETCH_CONVERSATIONS,
       payload: {

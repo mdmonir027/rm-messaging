@@ -23,9 +23,10 @@ const controller = {
     try {
       const userId = req.user._id;
       const messages = await Conversation.find({
-        sender: userId,
+        $or: [{ sender: userId }, { receiver: userId }],
       })
         .populate('receiver', 'name')
+        .populate('sender', 'name')
         .select('isRead receiver');
 
       return res.status(200).json(messages);
