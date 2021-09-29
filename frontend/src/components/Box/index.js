@@ -1,33 +1,16 @@
-import * as React from 'react';
-import {
-  AppBar,
-  CssBaseline,
-  Toolbar,
-  Typography,
-  Paper,
-  Avatar,
-  Grid,
-  TextField,
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useEffect } from 'react';
+import { CssBaseline, Typography, Paper, Avatar, Grid } from '@mui/material';
+import SendMessage from './SendMessage';
 
-const messages = [
-  {
-    id: 1,
-    primary: 'Brunch this week?',
-    secondary:
-      "I'll be in the neighbourhood this week. Let's grab a bite to eat",
-    person: new Date().toDateString(),
-  },
-  {
-    id: 2,
-    primary: 'Birthday Gift',
-    secondary: `Do you have a suggestion for a good`,
-    person: new Date().toDateString(),
-  },
-];
+import { connect } from 'react-redux';
+import { fetchAllMessage } from '../../store/acton/messageAction';
 
-const InboxBox = () => {
+const InboxBox = ({ fetchAllMessage, selected, messages }) => {
+  useEffect(() => fetchAllMessage(selected), [selected, fetchAllMessage]);
+  const checkIfSender = (sender) => {
+    if (sender !== selected) return true;
+    return false;
+  };
   return (
     <React.Fragment>
       <CssBaseline />
@@ -63,45 +46,15 @@ const InboxBox = () => {
           container
         >
           <Grid item xs={12}>
-            {messages.map(({ id, primary, secondary, person }, index) => {
-              if (index % 2 === 0) {
-                return (
-                  <Grid
-                    key={id}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      mb: '15px',
-                    }}
-                    container
-                    spacing={2}
-                  >
-                    <Grid item xs={11} sm={8} md={6}>
-                      <Typography
-                        variant='p'
-                        component='p'
-                        gutterBottom
-                        sx={{
-                          textAlign: 'left',
-                          bgcolor: '#1976d2b8',
-                          p: '5px 10px',
-                          borderRadius: '5px',
-                          minHeight: '50px',
-                        }}
-                      >
-                        {secondary}
-                      </Typography>
-                      <div>{person}</div>
-                    </Grid>
-                  </Grid>
-                );
-              }
+            {messages.map((message, index) => {
+              const condition = checkIfSender(message.sender);
+
               return (
                 <Grid
-                  key={id}
+                  key={message._id}
                   sx={{
                     display: 'flex',
-                    justifyContent: 'flex-end',
+                    justifyContent: condition ? 'flex-end' : 'flex-start',
                     mb: '15px',
                   }}
                   container
@@ -113,14 +66,14 @@ const InboxBox = () => {
                       component='p'
                       gutterBottom
                       sx={{
-                        textAlign: 'right',
-                        bgcolor: '#dadada',
+                        textAlign: condition ? 'right' : 'left',
+                        bgcolor: condition ? '#dadada' : '#1976d2b8',
                         p: '5px 10px',
                         borderRadius: '5px',
                         minHeight: '50px',
                       }}
                     >
-                      {secondary}
+                      {message?.text}
                     </Typography>
                     <Typography
                       variant='p'
@@ -130,7 +83,7 @@ const InboxBox = () => {
                         textAlign: 'right',
                       }}
                     >
-                      {person}
+                      {message?.createdAt}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -139,22 +92,14 @@ const InboxBox = () => {
           </Grid>
         </Grid>
       </Paper>
-      <AppBar
-        position='relative'
-        sx={{ top: 'auto', bottom: 0, bgcolor: '#dadada' }}
-      >
-        <Toolbar>
-          <Grid container justifyContent='space-between' alignItems='center'>
-            <Grid item sx={{ flex: '1' }}>
-              <TextField id='standard-basic' variant='standard' fullWidth />
-            </Grid>
-            <Grid item>
-              <SendIcon sx={{ width: '30px', ml: '10px', color: '#357ae8' }} />
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
+      <SendMessage />
     </React.Fragment>
   );
 };
-export default InboxBox;
+
+const mapStateToProps = (state) => ({
+  selected: state.conversation.selected,
+  messages: state.conversation.messages,
+});
+
+export default connect(mapStateToProps, { fetchAllMessage })(InboxBox);

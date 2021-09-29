@@ -72,12 +72,12 @@ const Sidebar = ({
               >
                 <ListItemAvatar>
                   <Avatar
-                    alt={conversation.receiver.name}
-                    src={conversation.receiver.name}
+                    alt={conversation?.receiver?.name || ''}
+                    src={conversation?.receiver?.name || ''}
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={conversation.receiver.name}
+                  primary={conversation?.receiver?.name}
                   secondary={sliceString('hello world', 35)}
                   sx={{ margin: 0 }}
                 />

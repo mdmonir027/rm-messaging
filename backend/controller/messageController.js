@@ -1,52 +1,51 @@
 const Message = require('../models/Messages');
 const Conversation = require('../models/Conversation');
 const User = require('../models/User');
+const { internalServerError } = require('../utils/errorResponse');
 
 const controller = {
   index: async (req, res, next) => {
+    console.log({ index: 'a' });
     try {
       const userId = req.user._id;
+      const { conversationId } = req.params;
 
-      const messages = await Message.find({ user: userId });
+      const conversation = await Conversation.findById(conversationId).populate(
+        'messages'
+      );
+
+      const messages = conversation.messages.sort((a, b) => {
+        if (a.createdAt > b.createdAt) return 1;
+        if (a.createdAt < b.createdAt) return -1;
+        return 0;
+      });
 
       return res.status(200).json(messages);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Internal Server Error',
-      });
+      internalServerError(res, error);
     }
   },
   create: async (req, res, next) => {
     try {
-      const { text, senderId, conversationId } = req.body;
+      const { text, conversationId } = req.body;
       const user = req.user;
 
       const messageInstance = new Message({
         text,
-        user: user._id,
+        sender: user._id,
       });
-
-      const conversationInstance = new Conversation({
-        sender: senderId,
-        receiver: user._id,
-        message: messageInstance._id,
-      });
-      await conversationInstance.save();
-
-      if (!conversationId) {
-        await User.findByIdAndUpdate(user._id, {
-          $push: {
-            connected: senderId,
-          },
-        });
-      }
 
       const message = await messageInstance.save();
+
+      await Conversation.findByIdAndUpdate(conversationId, {
+        $push: {
+          messages: message._id,
+        },
+      });
+
       return res.status(201).json(message);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Internal Server Error',
-      });
+      internalServerError(res, error);
     }
   },
   show: async (req, res, next) => {
