@@ -1,5 +1,6 @@
 const userRoutes = require('./userRoutes');
 const messageRoutes = require('./messageRoutes');
+const conversationRoutes = require('./conversationRoutes');
 
 const routeArrays = [
   {
@@ -9,6 +10,10 @@ const routeArrays = [
   {
     path: '/message',
     handler: messageRoutes,
+  },
+  {
+    path: '/conversation',
+    handler: conversationRoutes,
   },
   {
     path: '/',

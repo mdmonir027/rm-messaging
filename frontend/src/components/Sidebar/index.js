@@ -21,13 +21,13 @@ import AddIcon from '@mui/icons-material/Add';
 import './Sidebar.css';
 import SearchBox from './SearchBox';
 import { sliceString } from '../../utils/helper';
-import { fetchConnectedUser } from '../../store/acton/userAction';
+import { fetchAllConversations } from '../../store/acton/conversationAction';
 import { connect } from 'react-redux';
 
-const Sidebar = ({ fetchConnectedUser, connected }) => {
+const Sidebar = ({ conversations, fetchAllConversations }) => {
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => fetchConnectedUser(), [fetchConnectedUser]);
+  React.useEffect(() => fetchAllConversations(), [fetchAllConversations]);
 
   const handleClose = () => setOpen(false);
   return (
@@ -46,8 +46,8 @@ const Sidebar = ({ fetchConnectedUser, connected }) => {
           sx={{ mb: 2, height: '70vh', overflowY: 'scroll' }}
           className='scrollBar'
         >
-          {connected?.map((user) => (
-            <React.Fragment key={user._id}>
+          {conversations?.map((conversation) => (
+            <React.Fragment key={conversation._id}>
               <ListItem
                 button
                 sx={{
@@ -58,10 +58,13 @@ const Sidebar = ({ fetchConnectedUser, connected }) => {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar alt={user.username} src={user.username} />
+                  <Avatar
+                    alt={conversation.receiver.name}
+                    src={conversation.receiver.name}
+                  />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={user.name}
+                  primary={conversation.receiver.name}
                   secondary={sliceString('hello world', 35)}
                   sx={{ margin: 0 }}
                 />
@@ -99,7 +102,7 @@ const Sidebar = ({ fetchConnectedUser, connected }) => {
 };
 
 const mapStateToProps = (state) => ({
-  connected: state.user.connected,
+  conversations: state.conversation.all,
 });
 
-export default connect(mapStateToProps, { fetchConnectedUser })(Sidebar);
+export default connect(mapStateToProps, { fetchAllConversations })(Sidebar);

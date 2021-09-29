@@ -48,18 +48,3 @@ export const fetchDisconnectedUser = () => async (dispatch) => {
     console.log(error.response);
   }
 };
-
-export const connectNewUser = (userId) => async (dispatch) => {
-  try {
-    const response = await axios.post(`/user/connect/${userId}`);
-    const user = response.data;
-    dispatch({
-      type: types.CONNECT_NEW_USER,
-      payload: {
-        user,
-      },
-    });
-  } catch (error) {
-    console.log(error?.response?.data);
-  }
-};

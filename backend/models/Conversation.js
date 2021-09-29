@@ -4,16 +4,18 @@ const conversationSchema = new Schema(
   {
     sender: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'User',
     },
     receiver: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'User',
     },
-    message: {
-      type: Schema.Types.ObjectId,
-      ref: 'user',
-    },
+    messages: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'message',
+      },
+    ],
     isRead: {
       type: Schema.Types.Boolean,
       default: false,

@@ -2,10 +2,8 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { Typography, Autocomplete, TextField } from '@mui/material';
 import { connect } from 'react-redux';
-import {
-  fetchDisconnectedUser,
-  connectNewUser,
-} from '../../store/acton/userAction';
+import { fetchDisconnectedUser } from '../../store/acton/userAction';
+import { addConversation } from '../../store/acton/conversationAction';
 
 const style = {
   position: 'absolute',
@@ -21,14 +19,22 @@ const style = {
 const SearchBox = ({
   options,
   fetchDisconnectedUser,
-  connectNewUser,
   setOpen: modalSetFunction,
+  addConversation,
 }) => {
   React.useEffect(() => {
     fetchDisconnectedUser();
   }, [fetchDisconnectedUser]);
 
+  const [selectedUser, setSelectedUser] = React.useState('');
+
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!open && selectedUser) {
+      addConversation(selectedUser, modalSetFunction);
+    }
+  }, [open, selectedUser, addConversation, modalSetFunction]);
 
   return (
     <div>
@@ -47,8 +53,8 @@ const SearchBox = ({
             setOpen(false);
           }}
           isOptionEqualToValue={(option, value) => {
-            connectNewUser(value._id);
-            modalSetFunction(false);
+            setSelectedUser(value._id);
+
             return option.name === value.name;
           }}
           getOptionLabel={(option) => option?.name}
@@ -76,5 +82,5 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchDisconnectedUser,
-  connectNewUser,
+  addConversation,
 })(SearchBox);
